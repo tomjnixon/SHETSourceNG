@@ -37,58 +37,9 @@ class ShetSourceProtocol(PullProtocolTypes):
   
   def _clear_shet(self):
     """Clear all SHET records for this client."""
-    for prop_id   in self._properties.keys() : self.remove_property(prop_id)
-    for event_id  in self._events.keys()     : self.remove_event(event_id)
-    for action_id in self._actions.keys()    : self.remove_action(action_id)
-  
-  
-  def add_property(self, id, path, set_callback, get_callback):
-    if self.connected:
-      prop = self.shet.add_property(path, set_callback, get_callback)
-      self._properties[id] = prop
-      return prop
-    else:
-      raise NotConnected()
-  def remove_property(self, prop_id):
-    try:
-      self.shet.remove_property(self._properties[prop_id])
-    except Exception:
-      pass
-    finally:
-      del self._properties[prop_id]
-  
-  
-  def add_action(self, id, path, callback):
-    if self.connected:
-      action = self.shet.add_action(path, callback)
-      self._actions[id] = action
-      return action
-    else:
-      raise NotConnected()
-  def remove_action(self, action_id):
-    try:
-      self.shet.remove_action(self._actions[action_id])
-    except Exception:
-      pass
-    finally:
-      del self._actions[action_id]
-  
-  
-  def add_event(self, id, path):
-    if self.connected:
-      event = self.shet.add_event(path)
-      self._events[id] = event
-      return event
-    else:
-      raise NotConnected()
-  def remove_event(self, event_id):
-    try:
-      self.shet.remove_event(self._events[event_id])
-    except Exception:
-      pass
-    finally:
-      del self._events[event_id]
-  
+    for prop in self._properties.values(): self.shet.remove_property(prop)
+    for event in self._events.values(): self.shet.remove_event(event)
+    for action in self._actions.values(): self.shet.remove_action(action)
   
   @inlineCallbacks
   def process_reset(self):
@@ -109,7 +60,7 @@ class ShetSourceProtocol(PullProtocolTypes):
     event_id = (yield self.get_integer())
     address  = (yield self.get_string())
     
-    self.add_event(event_id, self.path(address))
+    self._events[event_id] = self.shet.add_event(self.path(address))
     
   @inlineCallbacks
   def process_add_action(self):
@@ -125,7 +76,8 @@ class ShetSourceProtocol(PullProtocolTypes):
           argument_type.convert(self, argument))
       return self.deferred_return(return_type)
     
-    self.add_action(action_id, self.path(address), on_call)
+    self._actions[action_id] = self.shet.add_action(self.path(address),
+                                                    on_call)
   
   @inlineCallbacks
   def process_add_property(self):
@@ -146,7 +98,8 @@ class ShetSourceProtocol(PullProtocolTypes):
           self.convert_integer(prop_id) +
           type.convert(self, value))
     
-    self.add_property(prop_id, self.path(address), on_get, on_set)
+    self._properties[prop_id] = self.shet.add_property(self.path(address),
+                                                       on_set, on_get)
   
   @inlineCallbacks
   def process_raise_event(self):

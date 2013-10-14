@@ -147,10 +147,10 @@ class ShetSourceProtocol(PullProtocolTypes):
     elif command == COMMAND_ADD_ACTION:      yield self.process_add_action()
     elif command == COMMAND_ADD_EVENT:       yield self.process_add_event()
     elif command == COMMAND_ADD_PROPERTY:    yield self.process_add_property()
-    elif command == COMMAND_REMOVE_ACTION:   yield self.process_remove_action()
+    # elif command == COMMAND_REMOVE_ACTION:   yield self.process_remove_action()
     # elif command == COMMAND_REMOVE_EVENT:    yield self.process_remove_event()
     # elif command == COMMAND_REMOVE_PROPERTY: yield self.process_remove_property()
-    # elif command == COMMAND_RAISE_EVENT:     yield self.process_raise_event()
+    elif command == COMMAND_RAISE_EVENT:     yield self.process_raise_event()
     else:
       raise Exception("Invalid command")
   

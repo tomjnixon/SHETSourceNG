@@ -99,7 +99,7 @@ class ShetSourceProtocol(PullProtocolTypes):
           type.convert(self, value))
     
     self._properties[prop_id] = self.shet.add_property(self.path(address),
-                                                       on_set, on_get)
+                                                       on_get, on_set)
   
   @inlineCallbacks
   def process_raise_event(self):

@@ -11,4 +11,5 @@ setup(
     package_dir=dict(shetsourceng="src"),
     packages=["shetsourceng"],
     requires=["twisted", "SHET"],
+    tests_require=["mock"],
     scripts=['bin/shetsource_tcp', 'bin/shetsource_direct'])

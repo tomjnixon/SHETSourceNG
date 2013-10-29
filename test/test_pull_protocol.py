@@ -1,6 +1,6 @@
 from twisted.trial import unittest
 from twisted.internet.defer import returnValue, inlineCallbacks, Deferred
-from protocol import PullProtocolTypes
+from src.pull_protocol import PullProtocolTypes
 from twisted.test import proto_helpers
 import struct
 

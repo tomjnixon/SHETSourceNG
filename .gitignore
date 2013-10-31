@@ -1,0 +1,5 @@
+_trial_temp
+build
+dist
+*.pyc
+*.egg-info

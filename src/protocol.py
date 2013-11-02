@@ -6,6 +6,9 @@ from commands import *
 from collections import deque
 import traceback
 
+import logging
+logger = logging.getLogger("protocol")
+
 class ShetSourceProtocol(PullProtocolTypes):
   
   def __init__(self, shet):
@@ -21,10 +24,20 @@ class ShetSourceProtocol(PullProtocolTypes):
     self._events     = {}
     self._actions    = {}
     
+    self.logger = logger
+    
     self.run()
   
+  def dataReceived(self, data):
+    self.logger.debug("recieved %s", repr(data))
+    PullProtocolTypes.dataReceived(self, data)
+  
+  def write(self, data):
+    self.logger.debug("sending %s", repr(data))
+    self.transport.write(data)
+  
   def connectionLost(self, reason):
-    print "connectionLost called"
+    self.logger.info("connection lost")
     PullProtocolTypes.connectionLost(self, reason)
     self._clear_shet()
   
@@ -124,7 +137,7 @@ class ShetSourceProtocol(PullProtocolTypes):
     reset_loop.start(2, now=False)
     try:
       while last_two_chars != reset_signal:
-        print "wait"
+        self.logger.info("waiting")
         char = (yield self.get_char())
         last_two_chars = (last_two_chars + char)[-2:]
     except:
@@ -162,5 +175,5 @@ class ShetSourceProtocol(PullProtocolTypes):
       while True:
         yield self.process_command()
     except Exception, e:
-      print traceback.format_exc()
+      self.logger.exception("exception in run")
       self.transport.loseConnection()

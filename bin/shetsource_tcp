@@ -5,6 +5,8 @@ from twisted.internet.protocol import Factory
 from shet.client import ShetClient
 from shetsourceng.protocol import ShetSourceProtocol
 
+import logging
+
 
 class ClientFactory(Factory):
 	"""Create new ShetSource Clients connected to the given ShetClient."""
@@ -25,6 +27,8 @@ def get_args():
 
 if __name__ == "__main__":
 	args = get_args()
+	
+	logging.basicConfig(level=logging.DEBUG)
 	
 	# Connect to SHET.
 	shet = ShetClient()

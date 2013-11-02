@@ -10,7 +10,6 @@ class PullProtocol(Protocol):
     self.buffer = deque()
 
   def dataReceived(self, data):
-    print "recieved {}".format(repr(data))
     self.buffer.extend(data)
     self._process_chars()
 

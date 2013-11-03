@@ -2,6 +2,7 @@ from twisted.internet.defer import returnValue, inlineCallbacks, Deferred, succe
 from twisted.internet.task import LoopingCall
 from pull_protocol import PullProtocolTypes
 from shet.client import ShetClient
+import shet.path
 from commands import *
 from collections import deque
 import traceback
@@ -43,10 +44,7 @@ class ShetSourceProtocol(PullProtocolTypes):
   
   def path(self, address):
     """Convert an address into a full SHET path for this device."""
-    if not address.startswith("/"):
-      return "/".join((self.base_path, address))
-    else:
-      return address
+    return shet.path.join(self.base_path, address)
   
   def _clear_shet(self):
     """Clear all SHET records for this client."""

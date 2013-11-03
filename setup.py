@@ -10,6 +10,6 @@ setup(
     url='https://github.com/tomjnixon/SHETSourceNG',
     package_dir=dict(shetsourceng="src"),
     packages=["shetsourceng"],
-    requires=["twisted", "SHET"],
+    install_requires=["twisted", "SHET"],
     tests_require=["mock"],
     scripts=['bin/shetsource_tcp', 'bin/shetsource_direct'])

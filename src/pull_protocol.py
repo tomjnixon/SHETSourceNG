@@ -111,8 +111,8 @@ class TypesMixin(object):
   
   def convert_type_value_list(self, types, values):
     if len(types) != len(values):
-      raise TypeError("expected {} arguments, {} given"
-                      .format(len(types), len(values)))
+      raise TypeError("expected %s arguments, %s given"
+                      % (len(types), len(values)))
     return ''.join(type.convert(self, value)
                    for type, value
                    in zip(types, values))

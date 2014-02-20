@@ -62,6 +62,32 @@ class TestReadData(unittest.TestCase):
     self.assertEqual((yield self.p.get_type()).name, "integer")
     self.p.dataReceived("\x02")
     self.assertEqual((yield self.p.get_type()).name, "string")
+  
+  @inlineCallbacks
+  def test_get_type_list(self):
+    self.p.dataReceived("\x00")
+    self.assertEqual((yield self.p.get_type_list()), [])
+    
+    self.p.dataReceived("\x01\x00")
+    self.assertEqual((yield self.p.get_type_list()),
+                     [self.p.TYPE_INTEGER])
+    
+    self.p.dataReceived("\x01\x02\x00")
+    self.assertEqual((yield self.p.get_type_list()),
+                     [self.p.TYPE_INTEGER, self.p.TYPE_STRING])
+  
+  @inlineCallbacks
+  def test_get_value_list(self):
+    self.p.dataReceived("\x00")
+    self.assertEqual((yield self.p.get_value_list()), [])
+    
+    self.p.dataReceived("\x01\x01\x00\x00")
+    self.assertEqual((yield self.p.get_value_list()),
+                     [1])
+    
+    self.p.dataReceived("\x01\x01\x00\x02foo\0\x00")
+    self.assertEqual((yield self.p.get_value_list()),
+                     [1, "foo"])
 
 
 class TestConvertData(unittest.TestCase):
@@ -88,6 +114,24 @@ class TestConvertData(unittest.TestCase):
   	self.assertEqual(self.p.convert_type(PullProtocolTypes.TYPE_VOID), "\x00")
   	self.assertEqual(self.p.convert_type(PullProtocolTypes.TYPE_INTEGER), "\x01")
   	self.assertEqual(self.p.convert_type(PullProtocolTypes.TYPE_STRING), "\x02")
+  
+  def test_convert_type_value_list(self):
+  	self.assertEqual(
+  	    self.p.convert_type_value_list([], []), "")
+  	
+  	self.assertEqual(
+  	    self.p.convert_type_value_list([self.p.TYPE_INTEGER], [1]),
+  	    "\x01\x00")
+  	
+  	self.assertEqual(
+  	    self.p.convert_type_value_list([self.p.TYPE_INTEGER,
+  	                                    self.p.TYPE_STRING],
+  	                                   [1, "foo"]),
+  	    "\x01\x00foo\0")
+  	
+  	self.assertRaises(TypeError,
+  	    self.p.convert_type_value_list,
+  	    [self.p.TYPE_INTEGER, self.p.TYPE_STRING], [1])
 
 
 if __name__ == "__main__":

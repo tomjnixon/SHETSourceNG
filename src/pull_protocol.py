@@ -89,6 +89,34 @@ class TypesMixin(object):
   
   def convert_type(self, type):
     return chr(type.id)
+  
+  @inlineCallbacks
+  def get_type_list(self):
+    recieved_types = []
+    while True:
+      type = (yield self.get_type())
+      if type is self.TYPE_VOID:
+        returnValue(recieved_types)
+      recieved_types.append(type)
+  
+  @inlineCallbacks
+  def get_value_list(self):
+    recieved = []
+    while True:
+      type = (yield self.get_type())
+      if type is self.TYPE_VOID:
+        returnValue(recieved)
+      value = (yield type.get(self))
+      recieved.append(value)
+  
+  def convert_type_value_list(self, types, values):
+    if len(types) != len(values):
+      raise TypeError("expected {} arguments, {} given"
+                      .format(len(types), len(values)))
+    return ''.join(type.convert(self, value)
+                   for type, value
+                   in zip(types, values))
+  
 
 class PullProtocolTypes(PullProtocol, TypesMixin):
   pass

@@ -78,13 +78,13 @@ class ShetSourceProtocol(PullProtocolTypes):
     action_id     = (yield self.get_integer())
     address       = (yield self.get_string())
     return_type   = (yield self.get_type())
-    argument_type = (yield self.get_type())
+    argument_type = (yield self.get_type_list())
     
-    def on_call(argument=None):
+    def on_call(*args):
       self.transport.write(
           self.convert_byte(COMMAND_CALL_ACTION) + 
           self.convert_integer(action_id) +
-          argument_type.convert(self, argument))
+          self.convert_type_value_list(argument_type, args))
       return self.deferred_return(return_type)
     
     self._actions[action_id] = self.shet.add_action(self.path(address),
@@ -115,13 +115,9 @@ class ShetSourceProtocol(PullProtocolTypes):
   @inlineCallbacks
   def process_raise_event(self):
     event_id = (yield self.get_integer())
-    type     = (yield self.get_type())
+    args     = (yield self.get_value_list())
     
-    if type.name == "void":
-      self._events[event_id]()
-    else:
-      value = (yield type.get(self))
-      self._events[event_id](value)
+    self._events[event_id](*args)
   
   def send_reset(self):
     self.transport.write(

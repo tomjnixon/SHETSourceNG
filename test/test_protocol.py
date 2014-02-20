@@ -29,7 +29,7 @@ class TestProtocol(unittest.TestCase):
     mock_shet = Mock()
     t, p = self.get_protocol(mock_shet)
     
-    p.dataReceived("\x03""\x01\x00""action\0""\x01""\x01")
+    p.dataReceived("\x03""\x01\x00""action\0""\x01""\x01\x00")
     [(call, (path, f), kwargs)] = mock_shet.add_action.mock_calls
     
     self.assertEqual(path, "/foo/action")
@@ -57,7 +57,7 @@ class TestProtocol(unittest.TestCase):
     self.assertEqual(t.value(), "")
     event.reset_mock()
     
-    p.dataReceived("\x09" "\x02\x00" "\x01" "\x0a\x00")
+    p.dataReceived("\x09" "\x02\x00" "\x01" "\x0a\x00" "\x00")
     event.assert_called_once_with(10)
     self.assertEqual(t.value(), "")
     event.reset_mock()
